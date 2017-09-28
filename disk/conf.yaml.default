@@ -37,6 +37,10 @@ instances:
     # ignore all mountpoints matching this regex.
     # excluded_mountpoint_re: /mnt/somebody-elses-problem.*
     #
+    # The (optional) suppress_disk_warnings parameter will instruct the check to
+    # ignore disk warning logs being written to the daemon.log. Defaults to no
+    # suppress_disk_warnings: no
+    #
     # The (optional) all_partitions parameter will instruct the check to
     # get metrics for all partitions. use_mount should be set to yes (to avoid
     # collecting empty device names) when using this option.

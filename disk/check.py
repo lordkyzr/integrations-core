@@ -57,6 +57,8 @@ class Disk(AgentCheck):
         self._excluded_disks = instance.get('excluded_disks', [])
         self._excluded_mountpoint_re = re.compile(
             instance.get('excluded_mountpoint_re', '^$'))
+        self._suppress_disk_warnings = _is_affirmative(
+            instance.get('suppress_disk_warnings', False))
         self._tag_by_filesystem = _is_affirmative(
             instance.get('tag_by_filesystem', False))
         self._all_partitions = _is_affirmative(
@@ -103,7 +105,8 @@ class Disk(AgentCheck):
                 )
                 continue
             except Exception as e:
-                self.log.warn("Unable to get disk metrics for %s: %s", part.mountpoint, e)
+                if self._suppress_disk_warnings == False:
+                    self.log.warn("Unable to get disk metrics for %s: %s", part.mountpoint, e)
                 continue
             # Exclude disks with total disk size 0
             if disk_usage.total == 0:
@@ -183,7 +186,9 @@ class Disk(AgentCheck):
             )
             return metrics
         except Exception as e:
-            self.log.warn("Unable to get disk metrics for %s: %s", mountpoint, e)
+            if self._suppress_disk_warnings == False:
+                self.log.warn("Unable to get disk metrics for %s: %s", part.mountpoint, e)
+
             return metrics
 
         if inodes.f_files != 0:
